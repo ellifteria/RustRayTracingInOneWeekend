@@ -1,3 +1,5 @@
+use std::io::Write;
+
 fn main() {
     let img_width = 256;
     let img_height = 256;
@@ -6,6 +8,7 @@ fn main() {
 
     for inv_row in 1..=img_height {
         for col in 1..=img_width {
+            eprint!("\rLine: {}    ", col);
             let row = img_height - inv_row;
 
             let ir = 254.999 * (col as f32) / ((img_width) as f32);
@@ -13,6 +16,8 @@ fn main() {
             let ib = 254.999 * 0.25;
 
             println!("{ir:.0} {ig:.0} {ib:.0}");
+            let _ = std::io::stderr().flush();
         }
     }
+    eprint!("\n");
 }
