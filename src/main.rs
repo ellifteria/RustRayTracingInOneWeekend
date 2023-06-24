@@ -33,13 +33,10 @@ fn main() {
     let origin = Vec3::new(0.0, 0.0, 0.0);
     let horizontal = Vec3::new(viewpost_width, 0.0, 0.0);
     let vertical = Vec3::new(0.0, viewport_height, 0.0);
-    let lower_left_corner = origin.add(
-        &horizontal.scalar_mult(-0.5).add(
-            &vertical.scalar_mult(-0.5)
-        ).add(
-            &Vec3::new(0.0, 0.0, focal_length)
-        )
-    );
+    let lower_left_corner = origin
+        .subtract(&horizontal.scalar_mult(0.5))
+        .subtract(&vertical.scalar_mult(0.5))
+        .add(&Vec3::new(0.0, 0.0, focal_length));
 
     println!("P3\n{img_width} {img_height}\n255");
 
@@ -53,14 +50,11 @@ fn main() {
 
             let r = Ray::new(
                 &origin,
-                &(lower_left_corner.add(
-                    &horizontal.scalar_mult(u)
-                ).add(
-                    &vertical.scalar_mult(v)
-                ).add(
-                    &origin.scalar_mult(-1.0)
-                ))
-            );
+                &(
+                    &lower_left_corner
+                        .add(&horizontal.scalar_mult(u))
+                        .add(&vertical.scalar_mult(v))
+                        .subtract(&origin)));
 
             let pixel_color = ray_color(&r);
 

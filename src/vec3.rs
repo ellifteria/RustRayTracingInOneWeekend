@@ -93,4 +93,8 @@ impl Vec3 {
     pub fn get_z(&self) -> f64 {
         self.e2
     }
+
+    pub fn subtract(&self, rhs: &Vec3) -> Self {
+        self.add(&rhs.scalar_mult(-1.0))
+    }
 }
