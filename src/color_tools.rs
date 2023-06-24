@@ -17,7 +17,7 @@ pub fn write_color(color: Vec3) -> String {
     let g: f64 = 255.999 * clamp(color.e1, 0.0, 1.0);
     let b: f64 = 255.999 * clamp(color.e2, 0.0, 1.0);
 
-    let color_to_write = Vec3::new(r, g, b);
+    let color_to_write: Vec3 = Vec3::new(r, g, b);
 
     color_to_write.to_string(0)
 }

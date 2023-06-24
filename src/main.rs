@@ -14,11 +14,11 @@ use include::*;
 pub fn hit_sphere(center: &Vec3, radius: f64, r: &Ray) -> bool {
     let oc: Vec3 = r.get_origin().subtract(center);
 
-    let a = r.get_direction().dot(&r.get_direction());
-    let b = 2.0 * oc.dot(&r.get_direction());
-    let c = oc.dot(&oc) - radius * radius;
+    let a: f64 = r.get_direction().dot(&r.get_direction());
+    let b: f64 = 2.0 * oc.dot(&r.get_direction());
+    let c: f64 = oc.dot(&oc) - radius * radius;
 
-    let discriminant = b * b - 4.0 * a * c;
+    let discriminant: f64 = b * b - 4.0 * a * c;
 
     return discriminant > 0.0;
 }
@@ -28,28 +28,28 @@ fn ray_color(r: &Ray) -> Vec3 {
         return Vec3::new(1.0, 0.0, 0.0);
     }
 
-    let unit_dir = r.direction.unit_vector();
-    let t = 0.5 * (unit_dir.get_y() + 1.0);
+    let unit_dir: Vec3 = r.direction.unit_vector();
+    let t: f64 = 0.5 * (unit_dir.get_y() + 1.0);
     
-    let vec_1 = Vec3::new(1.0, 1.0, 1.0);
-    let vec_2 = Vec3::new(0.5, 0.7, 1.0);
+    let vec_1: Vec3 = Vec3::new(1.0, 1.0, 1.0);
+    let vec_2: Vec3 = Vec3::new(0.5, 0.7, 1.0);
 
     vec_1.scalar_mult(1.0 - t).add(&vec_2.scalar_mult(t))
 }
 
 fn main() {
     let aspect_ratio: f64 = 16.0 / 9.0;
-    let img_width = 400;
-    let img_height = ((img_width as f64) / aspect_ratio) as i32;
+    let img_width: i32 = 400;
+    let img_height: i32 = ((img_width as f64) / aspect_ratio) as i32;
 
-    let viewport_height = 2.0;
-    let viewpost_width = aspect_ratio * viewport_height;
-    let focal_length = 1.0;
+    let viewport_height: f64 = 2.0;
+    let viewpost_width: f64 = aspect_ratio * viewport_height;
+    let focal_length: f64 = 1.0;
 
-    let origin = Vec3::new(0.0, 0.0, 0.0);
-    let horizontal = Vec3::new(viewpost_width, 0.0, 0.0);
-    let vertical = Vec3::new(0.0, viewport_height, 0.0);
-    let lower_left_corner = origin
+    let origin: Vec3 = Vec3::new(0.0, 0.0, 0.0);
+    let horizontal: Vec3 = Vec3::new(viewpost_width, 0.0, 0.0);
+    let vertical: Vec3 = Vec3::new(0.0, viewport_height, 0.0);
+    let lower_left_corner: Vec3 = origin
         .subtract(&horizontal.scalar_mult(0.5))
         .subtract(&vertical.scalar_mult(0.5))
         .add(&Vec3::new(0.0, 0.0, focal_length));
@@ -59,12 +59,12 @@ fn main() {
     for inv_row in 1..=img_height {
         for col in 1..=img_width {
             eprint!("\rLine: {}    ", col);
-            let row = img_height - inv_row;
+            let row: i32 = img_height - inv_row;
 
-            let u = (col as f64) / (img_width as f64 - 1.0);
-            let v = (row as f64) / (img_height as f64 - 1.0);
+            let u: f64 = (col as f64) / (img_width as f64 - 1.0);
+            let v: f64 = (row as f64) / (img_height as f64 - 1.0);
 
-            let r = Ray::new(
+            let r: Ray = Ray::new(
                 &origin,
                 &(
                     &lower_left_corner
@@ -72,7 +72,7 @@ fn main() {
                         .add(&vertical.scalar_mult(v))
                         .subtract(&origin)));
 
-            let pixel_color = ray_color(&r);
+            let pixel_color: Vec3 = ray_color(&r);
 
             println!("{}", write_color(pixel_color));
             let _ = std::io::stderr().flush();
