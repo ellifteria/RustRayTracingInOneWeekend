@@ -11,7 +11,23 @@ mod include {
 
 use include::*;
 
+pub fn hit_sphere(center: &Vec3, radius: f64, r: &Ray) -> bool {
+    let oc: Vec3 = r.get_origin().subtract(center);
+
+    let a = r.get_direction().dot(&r.get_direction());
+    let b = 2.0 * oc.dot(&r.get_direction());
+    let c = oc.dot(&oc) - radius * radius;
+
+    let discriminant = b * b - 4.0 * a * c;
+
+    return discriminant > 0.0;
+}
+
 fn ray_color(r: &Ray) -> Vec3 {
+    if hit_sphere(&Vec3 { e0: 0.0, e1: 0.0, e2: -1.0 }, 0.5, r) {
+        return Vec3::new(1.0, 0.0, 0.0);
+    }
+
     let unit_dir = r.direction.unit_vector();
     let t = 0.5 * (unit_dir.get_y() + 1.0);
     
