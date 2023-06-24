@@ -1,4 +1,13 @@
-use std::io::Write;
+mod vec3;
+mod color_tools;
+
+mod include {
+    pub use std::io::Write;
+    pub use crate::vec3::*;
+    pub use crate::color_tools::*;
+}
+
+use include::*;
 
 fn main() {
     let img_width = 256;
@@ -11,11 +20,12 @@ fn main() {
             eprint!("\rLine: {}    ", col);
             let row = img_height - inv_row;
 
-            let ir = 254.999 * (col as f32) / ((img_width) as f32);
-            let ig = 254.999 * (row as f32) / ((img_height) as f32);
-            let ib = 254.999 * 0.25;
+            let ir = (col as f64) / ((img_width) as f64);
+            let ig = (row as f64) / ((img_height) as f64);
+            let ib = 0.25;
 
-            println!("{ir:.0} {ig:.0} {ib:.0}");
+            let curr_color = Vec3::new(ir, ig, ib);
+            println!("{}", write_color(curr_color));
             let _ = std::io::stderr().flush();
         }
     }
