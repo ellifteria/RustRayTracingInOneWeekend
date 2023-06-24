@@ -77,4 +77,20 @@ impl Vec3 {
 
         format!("{x:.num_digits$} {y:.num_digits$} {z:.num_digits$}")
     }
+
+    pub fn unit_vector(&self) -> Self {
+        self.scalar_mult(1.0 / self.length())
+    }
+
+    pub fn get_x(&self) -> f64 {
+        self.e0
+    }
+    
+    pub fn get_y(&self) -> f64 {
+        self.e1
+    }
+
+    pub fn get_z(&self) -> f64 {
+        self.e2
+    }
 }
