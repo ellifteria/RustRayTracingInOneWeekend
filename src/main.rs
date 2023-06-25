@@ -1,43 +1,44 @@
 mod vec3;
 mod color_tools;
 mod ray;
+mod hitable;
+mod sphere;
+mod hitable_list;
 
 mod include {
     pub use std::io::Write;
     pub use crate::vec3::*;
     pub use crate::color_tools::*;
     pub use crate::ray::*;
+    pub use crate::hitable::*;
+    pub use crate::sphere::*;
+    pub use crate::hitable_list::*;
 }
 
 use include::*;
 
-pub fn hit_sphere(center: &Vec3, radius: f64, r: &Ray) -> f64 {
-    let oc: Vec3 = r.get_origin().subtract(center);
-    
-    let a: f64 = r.get_direction().length_squared();
-    let half_b: f64 = oc.dot(&r.get_direction());
-    let c: f64 = oc.length() - radius * radius;
-    let discriminant: f64 = half_b * half_b - a * c;
+fn ray_color(r: &Ray, world: &dyn Hitable) -> Vec3 {
+    let mut rec: HitRecord = HitRecord{
+        point:      Vec3 { e0: 0.0, e1: 0.0, e2: 0.0 },
+        normal:     Vec3 { e0: 0.0, e1: 0.0, e2: 0.0 },
+        t:          0.0,
+        front_face: false
+    };
 
-    if discriminant < 0.0 {
-        return -1.0;
+    if world.hit(
+        r,
+        0.0,
+        f64::INFINITY,
+        &mut rec
+    ) {
+        return rec.get_normal()
+            .scalar_add(1.0)
+            .scalar_mult(0.5);
     }
 
-    return (-half_b - discriminant.sqrt()) / a;
-}
-
-fn ray_color(r: &Ray) -> Vec3 {
-    let mut t: f64 = hit_sphere(&Vec3 { e0: 0.0, e1: 0.0, e2: -1.0 }, 0.5, r);
-
-    if t >= 0.0 {
-        let N: Vec3 = r.at(t)
-            .subtract(&Vec3 { e0: 0.0, e1: 0.0, e2: -1.0 })
-            .unit_vector();
-        return N.scalar_add(1.0).scalar_mult(0.5);
-    }
-
-    let unit_dir: Vec3 = r.direction.unit_vector();
-    t = 0.5 * (unit_dir.get_y() + 1.0);
+    let unit_dir: Vec3 = r.get_direction()
+        .unit_vector();
+    let t = 0.5 * (unit_dir.get_y() + 1.0);
     
     let vec_1: Vec3 = Vec3::new(1.0, 1.0, 1.0);
     let vec_2: Vec3 = Vec3::new(0.5, 0.7, 1.0);
@@ -49,6 +50,29 @@ fn main() {
     let aspect_ratio: f64 = 16.0 / 9.0;
     let img_width: i32 = 400;
     let img_height: i32 = ((img_width as f64) / aspect_ratio) as i32;
+
+    let mut world: HitableList = HitableList::new();
+
+    world.add(
+        Sphere::new(
+            Vec3::new(
+                0.0,
+                0.0,
+                -1.0
+            ),
+            0.5
+        )
+    );
+    world.add(
+        Sphere::new(
+            Vec3::new(
+                0.0,
+                -100.5,
+                -1.0
+            ),
+            100.0
+        )
+    );
 
     let viewport_height: f64 = 2.0;
     let viewpost_width: f64 = aspect_ratio * viewport_height;
@@ -80,7 +104,7 @@ fn main() {
                         .add(&vertical.scalar_mult(v))
                         .subtract(&origin)));
 
-            let pixel_color: Vec3 = ray_color(&r);
+            let pixel_color: Vec3 = ray_color(&r, &world);
 
             println!("{}", write_color(pixel_color));
             let _ = std::io::stderr().flush();
