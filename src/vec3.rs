@@ -72,9 +72,9 @@ impl Vec3 {
     }
 
     pub fn to_string(&self, num_digits: usize) -> String {
-        let x: f64 = self.e0;
-        let y: f64 = self.e1;
-        let z: f64 = self.e2;
+        let x: i32 = self.e0.floor() as i32;
+        let y: i32 = self.e1.floor() as i32;
+        let z: i32 = self.e2.floor() as i32;
 
         format!("{x:.num_digits$} {y:.num_digits$} {z:.num_digits$}")
     }

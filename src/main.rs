@@ -11,7 +11,7 @@ mod include {
 
 use include::*;
 
-pub fn hit_sphere(center: &Vec3, radius: f64, r: &Ray) -> bool {
+pub fn hit_sphere(center: &Vec3, radius: f64, r: &Ray) -> f64 {
     let oc: Vec3 = r.get_origin().subtract(center);
 
     let a: f64 = r.get_direction().dot(&r.get_direction());
@@ -20,16 +20,25 @@ pub fn hit_sphere(center: &Vec3, radius: f64, r: &Ray) -> bool {
 
     let discriminant: f64 = b * b - 4.0 * a * c;
 
-    return discriminant > 0.0;
+    if discriminant < 0.0 {
+        return -1.0;
+    }
+
+    return (-b - discriminant.sqrt()) / (2.0 * a);
 }
 
 fn ray_color(r: &Ray) -> Vec3 {
-    if hit_sphere(&Vec3 { e0: 0.0, e1: 0.0, e2: -1.0 }, 0.5, r) {
-        return Vec3::new(1.0, 0.0, 0.0);
+    let mut t: f64 = hit_sphere(&Vec3 { e0: 0.0, e1: 0.0, e2: -1.0 }, 0.5, r);
+
+    if t >= 0.0 {
+        let N: Vec3 = r.at(t)
+            .subtract(&Vec3 { e0: 0.0, e1: 0.0, e2: -1.0 })
+            .unit_vector();
+        return N.scalar_add(1.0).scalar_mult(0.5);
     }
 
     let unit_dir: Vec3 = r.direction.unit_vector();
-    let t: f64 = 0.5 * (unit_dir.get_y() + 1.0);
+    t = 0.5 * (unit_dir.get_y() + 1.0);
     
     let vec_1: Vec3 = Vec3::new(1.0, 1.0, 1.0);
     let vec_2: Vec3 = Vec3::new(0.5, 0.7, 1.0);
@@ -52,7 +61,7 @@ fn main() {
     let lower_left_corner: Vec3 = origin
         .subtract(&horizontal.scalar_mult(0.5))
         .subtract(&vertical.scalar_mult(0.5))
-        .add(&Vec3::new(0.0, 0.0, focal_length));
+        .subtract(&Vec3::new(0.0, 0.0, focal_length));
 
     println!("P3\n{img_width} {img_height}\n255");
 
