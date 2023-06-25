@@ -1,6 +1,5 @@
 use crate::include::*;
 
-#[derive(Default)]
 pub struct HitableList {
     objects:    Vec<Box<dyn Hitable>>
 }
