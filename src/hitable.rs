@@ -9,11 +9,11 @@ pub struct HitRecord {
 
 impl HitRecord {
     pub fn get_point(&self) -> Vec3 {
-        return self.point;
+        return self.point.duplicate();
     }
 
     pub fn get_normal(&self) -> Vec3 {
-        return self.normal;
+        return self.normal.duplicate();
     }
 
     pub fn get_t(&self) -> f64 {
@@ -55,6 +55,13 @@ impl HitRecord {
                 e2: -outward_normal.get_z()
             });
         }
+    }
+
+    pub fn set_all(&mut self, rec: &HitRecord) {
+        self.set_t(rec.get_t());
+        self.set_point(rec.get_point());
+        self.set_normal(rec.get_normal());
+        self.set_front_face(rec.get_front_face());
     }
 }
 

@@ -47,10 +47,7 @@ impl Hitable for HitableList {
             }
         }
         
-        rec.set_t(temp_rec.get_t());
-        rec.set_point(temp_rec.get_point());
-        rec.set_normal(temp_rec.get_normal());
-        rec.set_front_face(temp_rec.get_front_face());
+        rec.set_all(&temp_rec);
         
         return hit_anything;
     }

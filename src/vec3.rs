@@ -1,4 +1,3 @@
-#[derive(Copy, Clone)]
 pub struct Vec3 {
     pub e0: f64,
     pub e1: f64,
@@ -97,5 +96,13 @@ impl Vec3 {
 
     pub fn subtract(&self, rhs: &Vec3) -> Self {
         self.add(&rhs.scalar_mult(-1.0))
+    }
+    
+    pub fn duplicate(&self) -> Self {
+        Self {
+            e0: self.get_x(),
+            e1: self.get_y(),
+            e2: self.get_z()
+        }
     }
 }

@@ -1,6 +1,5 @@
 use crate::include::*;
 
-#[derive(Copy, Clone)]
 pub struct Ray {
     pub origin:     Vec3,
     pub direction:  Vec3
@@ -26,10 +25,17 @@ impl Ray {
         self.origin.add(&self.direction.scalar_mult(t))
     }
     pub fn get_origin(&self) -> Vec3 {
-        self.origin.clone()
+        self.origin.duplicate()
     }
 
     pub fn get_direction(&self) -> Vec3 {
-        self.direction.clone()
+        self.direction.duplicate()
+    }
+
+    pub fn duplicate(&self) -> Self {
+        Self {
+            origin:     self.get_origin().duplicate(),
+            direction:  self.get_direction().duplicate()
+        }
     }
 }
