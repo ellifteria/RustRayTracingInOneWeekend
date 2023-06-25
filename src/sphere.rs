@@ -17,10 +17,10 @@ impl Sphere {
 impl Hitable for Sphere {
     fn hit(
         &self,
-        r: &Ray,
-        t_min: f64,
-        t_max:f64,
-        rec: &mut HitRecord
+        r:      &Ray,
+        t_min:  f64,
+        t_max:  f64,
+        rec:    &mut HitRecord
     ) -> bool {
         let oc: Vec3 = r.get_origin().subtract(&self.center);
     

@@ -13,6 +13,7 @@ mod include {
     pub use crate::hitable::*;
     pub use crate::sphere::*;
     pub use crate::hitable_list::*;
+    pub const RESOLUTIONSCALE: f64 = 1.0;
 }
 
 use include::*;
@@ -43,12 +44,12 @@ fn ray_color(r: &Ray, world: &dyn Hitable) -> Vec3 {
     let vec_1: Vec3 = Vec3::new(1.0, 1.0, 1.0);
     let vec_2: Vec3 = Vec3::new(0.5, 0.7, 1.0);
 
-    vec_1.scalar_mult(1.0 - t).add(&vec_2.scalar_mult(t))
+    return vec_1.scalar_mult(1.0 - t).add(&vec_2.scalar_mult(t));
 }
 
 fn main() {
     let aspect_ratio: f64 = 16.0 / 9.0;
-    let img_width: i32 = 400;
+    let img_width: i32 = 400 * (RESOLUTIONSCALE as i32);
     let img_height: i32 = ((img_width as f64) / aspect_ratio) as i32;
 
     let mut world: HitableList = HitableList::new();
@@ -56,21 +57,22 @@ fn main() {
     world.add(
         Sphere::new(
             Vec3::new(
-                0.0,
-                0.0,
-                -1.0
+                0.0 * RESOLUTIONSCALE,
+                0.0 * RESOLUTIONSCALE,
+                -1.0 * RESOLUTIONSCALE
             ),
-            0.5
+            0.5 * RESOLUTIONSCALE
         )
     );
+
     world.add(
         Sphere::new(
             Vec3::new(
-                0.0,
-                -100.5,
-                -1.0
+                0.0 * RESOLUTIONSCALE,
+                -100.5 * RESOLUTIONSCALE,
+                -1.0 * RESOLUTIONSCALE
             ),
-            100.0
+            100.0 * RESOLUTIONSCALE
         )
     );
 
@@ -90,8 +92,9 @@ fn main() {
 
     for inv_row in 1..=img_height {
         for col in 1..=img_width {
-            eprint!("\rLine: {}    ", col);
             let row: i32 = img_height - inv_row;
+            
+            eprint!("\rRows left: {}        ", row);
 
             let u: f64 = (col as f64) / (img_width as f64 - 1.0);
             let v: f64 = (row as f64) / (img_height as f64 - 1.0);

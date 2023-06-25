@@ -9,8 +9,16 @@ pub struct Ray {
 impl Ray {
     pub fn new(origin: &Vec3, direction: &Vec3) -> Self {
         Self {
-            origin: Vec3::new(origin.get_x(), origin.get_y(), origin.get_z()),
-            direction: Vec3::new(direction.get_x(), direction.get_y(), direction.get_z()),
+            origin:     Vec3::new(
+                origin.get_x(),
+                origin.get_y(),
+                origin.get_z()
+            ),
+            direction:  Vec3::new(
+                direction.get_x(),
+                direction.get_y(),
+                direction.get_z()
+            ),
         }
     }
 

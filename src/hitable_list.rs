@@ -2,7 +2,7 @@ use crate::include::*;
 
 #[derive(Default)]
 pub struct HitableList {
-    objects: Vec<Box<dyn Hitable>>
+    objects:    Vec<Box<dyn Hitable>>
 }
 
 impl HitableList {
@@ -24,10 +24,10 @@ impl HitableList {
 impl Hitable for HitableList {
     fn hit(
         &self,
-        r: &Ray,
-        t_min: f64,
-        t_max:f64,
-        rec: &mut HitRecord
+        r:      &Ray,
+        t_min:  f64,
+        t_max:  f64,
+        rec:    &mut HitRecord
     ) -> bool {
         let mut temp_rec: HitRecord = HitRecord{
             point:      Vec3 { e0: 0.0, e1: 0.0, e2: 0.0 },
@@ -37,6 +37,7 @@ impl Hitable for HitableList {
         };
         let mut closest_so_far: f64 = t_max;
         let mut hit_anything: bool = false;
+
         for object in &self.objects {
             if object.hit(r, t_min, closest_so_far, &mut temp_rec) {
                 hit_anything = true;
@@ -50,6 +51,7 @@ impl Hitable for HitableList {
         rec.set_point(temp_rec.get_point());
         rec.set_normal(temp_rec.get_normal());
         rec.set_front_face(temp_rec.get_front_face());
-        hit_anything
+        
+        return hit_anything;
     }
 }
