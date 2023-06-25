@@ -38,7 +38,7 @@ fn ray_color(r: &Ray, world: &dyn Hitable) -> Vec3 {
 
     let unit_dir: Vec3 = r.get_direction()
         .unit_vector();
-    let t = 0.5 * (unit_dir.get_y() + 1.0);
+    let t: f64 = 0.5 * (unit_dir.get_y() + 1.0);
     
     let vec_1: Vec3 = Vec3::new(1.0, 1.0, 1.0);
     let vec_2: Vec3 = Vec3::new(0.5, 0.7, 1.0);
