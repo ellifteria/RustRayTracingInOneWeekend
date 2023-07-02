@@ -4,16 +4,19 @@ mod ray;
 mod hitable;
 mod sphere;
 mod hitable_list;
+mod camera;
 
 mod include {
     pub use std::io::Write;
+    pub use rand::Rng;
     pub use crate::vec3::*;
     pub use crate::color_tools::*;
     pub use crate::ray::*;
     pub use crate::hitable::*;
     pub use crate::sphere::*;
     pub use crate::hitable_list::*;
-    pub const RESOLUTIONSCALE: f64 = 1.0;
+    pub use crate::camera::*;
+    pub const RESOLUTIONSCALE: f64 = 2.0;
 }
 
 use include::*;
@@ -48,9 +51,12 @@ fn ray_color(r: &Ray, world: &dyn Hitable) -> Vec3 {
 }
 
 fn main() {
+    let mut rng = rand::thread_rng();
+
     let aspect_ratio: f64 = 16.0 / 9.0;
     let img_width: i32 = 400 * (RESOLUTIONSCALE as i32);
     let img_height: i32 = ((img_width as f64) / aspect_ratio) as i32;
+    let samples_per_pixel: i32 = 100;
 
     let mut world: HitableList = HitableList::new();
 
@@ -77,16 +83,10 @@ fn main() {
     );
 
     let viewport_height: f64 = 2.0;
-    let viewpost_width: f64 = aspect_ratio * viewport_height;
     let focal_length: f64 = 1.0;
-
     let origin: Vec3 = Vec3::new(0.0, 0.0, 0.0);
-    let horizontal: Vec3 = Vec3::new(viewpost_width, 0.0, 0.0);
-    let vertical: Vec3 = Vec3::new(0.0, viewport_height, 0.0);
-    let lower_left_corner: Vec3 = origin
-        .subtract(&horizontal.scalar_mult(0.5))
-        .subtract(&vertical.scalar_mult(0.5))
-        .subtract(&Vec3::new(0.0, 0.0, focal_length));
+    let cam = Camera::new(aspect_ratio, viewport_height, focal_length, origin);
+
 
     println!("P3\n{img_width} {img_height}\n255");
 
@@ -96,20 +96,16 @@ fn main() {
             
             eprint!("\rRows left: {}        ", row);
 
-            let u: f64 = (col as f64) / (img_width as f64 - 1.0);
-            let v: f64 = (row as f64) / (img_height as f64 - 1.0);
+            let mut pixel_color: Vec3 = Vec3::new(0.0, 0.0, 0.0);
 
-            let r: Ray = Ray::new(
-                &origin,
-                &(
-                    &lower_left_corner
-                        .add(&horizontal.scalar_mult(u))
-                        .add(&vertical.scalar_mult(v))
-                        .subtract(&origin)));
+            for _i in 1..=samples_per_pixel {
+                let u: f64 = (rng.gen::<f64>() + col as f64) / (img_width as f64 - 1.0);
+                let v: f64 = (rng.gen::<f64>() + row as f64) / (img_height as f64 - 1.0);
+                let r: Ray = cam.get_ray(u, v);
+                pixel_color = pixel_color.add(&ray_color(&r, &world));
+            }
 
-            let pixel_color: Vec3 = ray_color(&r, &world);
-
-            println!("{}", write_color(pixel_color));
+            println!("{}", write_color(pixel_color, samples_per_pixel));
             let _ = std::io::stderr().flush();
         }
     }
