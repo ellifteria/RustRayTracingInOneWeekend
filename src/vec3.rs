@@ -1,3 +1,5 @@
+use rand::Rng;
+
 pub struct Vec3 {
     pub e0: f64,
     pub e1: f64,
@@ -104,5 +106,46 @@ impl Vec3 {
             e1: self.get_y(),
             e2: self.get_z()
         }
+    }
+
+    pub fn random() -> Self {
+        let mut rng = rand::thread_rng();
+
+        Self {
+            e0: rng.gen::<f64>(),
+            e1: rng.gen::<f64>(),
+            e2: rng.gen::<f64>()
+        }
+    }
+    pub fn random_range(min: f64, max: f64) -> Self {
+        let mut rng = rand::thread_rng();
+
+        Self {
+            e0: rng.gen_range(min..max),
+            e1: rng.gen_range(min..max),
+            e2: rng.gen_range(min..max)
+        }
+    }
+
+    pub fn random_in_unit_sphere() -> Self {
+        loop {
+            let tst_vec3: Self = Self::random_range(-1.0, 1.0);
+            if tst_vec3.length_squared() < 1.0 {
+                return tst_vec3;
+            }
+        }
+    }
+    
+    pub fn random_unit_in_unit_sphere() -> Self {
+        Self::unit_vector(&Self::random_in_unit_sphere())
+    }
+
+    pub fn random_in_unit_hemisphere(normal: Vec3) -> Self {
+        let in_unit_sphere: Vec3 = Self::random_in_unit_sphere();
+        if in_unit_sphere.dot(&normal) > 0.0 {
+            return in_unit_sphere;
+        }
+        
+        return in_unit_sphere.scalar_mult(-1.0);
     }
 }

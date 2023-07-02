@@ -16,12 +16,17 @@ mod include {
     pub use crate::sphere::*;
     pub use crate::hitable_list::*;
     pub use crate::camera::*;
-    pub const RESOLUTIONSCALE: f64 = 2.0;
+    pub const RESOLUTIONSCALE: f64 = 3.0;
+    pub const MAXDEPTH: i32 = 50;
 }
 
 use include::*;
 
-fn ray_color(r: &Ray, world: &dyn Hitable) -> Vec3 {
+fn ray_color(r: &Ray, world: &dyn Hitable, depth: i32) -> Vec3 {
+    if depth <= 0 {
+        return Vec3::new(0.0, 0.0, 0.0);
+    }
+
     let mut rec: HitRecord = HitRecord{
         point:      Vec3 { e0: 0.0, e1: 0.0, e2: 0.0 },
         normal:     Vec3 { e0: 0.0, e1: 0.0, e2: 0.0 },
@@ -31,13 +36,22 @@ fn ray_color(r: &Ray, world: &dyn Hitable) -> Vec3 {
 
     if world.hit(
         r,
-        0.0,
+        0.001,
         f64::INFINITY,
         &mut rec
     ) {
-        return rec.get_normal()
-            .scalar_add(1.0)
-            .scalar_mult(0.5);
+        let target: Vec3 = rec.get_point()
+            .add(&rec.get_normal())
+            .add(&Vec3::random_in_unit_hemisphere(rec.get_normal()));
+            // .add(&Vec3::random_unit_in_unit_sphere());
+        return ray_color(
+            &Ray::new(
+                &rec.get_point(),
+                &(&&target.subtract(&rec.get_point()))
+            ),
+            world,
+            depth - 1
+        ).scalar_mult(0.5);
     }
 
     let unit_dir: Vec3 = r.get_direction()
@@ -102,7 +116,7 @@ fn main() {
                 let u: f64 = (rng.gen::<f64>() + col as f64) / (img_width as f64 - 1.0);
                 let v: f64 = (rng.gen::<f64>() + row as f64) / (img_height as f64 - 1.0);
                 let r: Ray = cam.get_ray(u, v);
-                pixel_color = pixel_color.add(&ray_color(&r, &world));
+                pixel_color = pixel_color.add(&ray_color(&r, &world, MAXDEPTH));
             }
 
             println!("{}", write_color(pixel_color, samples_per_pixel));
