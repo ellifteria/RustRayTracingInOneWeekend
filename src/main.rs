@@ -16,7 +16,7 @@ mod include {
     pub use crate::sphere::*;
     pub use crate::hitable_list::*;
     pub use crate::camera::*;
-    pub const RESOLUTIONSCALE: f64 = 3.0;
+    pub const RESOLUTIONSCALE: f64 = 8.0;
     pub const MAXDEPTH: i32 = 50;
 }
 
@@ -70,7 +70,7 @@ fn main() {
     let aspect_ratio: f64 = 16.0 / 9.0;
     let img_width: i32 = 400 * (RESOLUTIONSCALE as i32);
     let img_height: i32 = ((img_width as f64) / aspect_ratio) as i32;
-    let samples_per_pixel: i32 = 100;
+    let samples_per_pixel: i32 = 500;
 
     let mut world: HitableList = HitableList::new();
 
